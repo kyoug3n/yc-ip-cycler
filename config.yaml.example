@@ -1,0 +1,47 @@
+# yc-ip-cycler configuration
+# Copy this file to config.yaml and fill in your values.
+# config.yaml is gitignored — never commit credentials.
+
+# ── Yandex Cloud folder ────────────────────────────────────────────────────
+# Find your folder ID in the Yandex Cloud console:
+#   https://console.yandex.cloud/ → select a cloud → your folder → Overview
+# Or run:  yc resource-manager folder list
+folder_id: "b1g0000000000000000"
+
+# ── Availability zone ──────────────────────────────────────────────────────
+# Zones available as of 2025: ru-central1-a, ru-central1-b, ru-central1-d
+# Use the same zone where your VM / load balancer lives.
+zone: "ru-central1-a"
+
+# ── Desired IP subnets ─────────────────────────────────────────────────────
+# CIDR blocks you want the allocated IP to fall inside.
+# The tool stops as soon as ANY of these matches.
+#
+# Below are Yandex's well-known ASN 13238 prefixes that are commonly
+# whitelisted by ISPs in restricted networks.  Verify current allocations at:
+#   https://bgp.he.net/AS13238#_prefixes
+#   https://ipinfo.io/AS13238
+desired_subnets:
+  - "5.45.192.0/18"       # Yandex / AS13238
+  - "5.255.192.0/18"      # Yandex / AS13238
+  - "37.9.64.0/18"        # Yandex / AS13238
+  - "37.140.128.0/18"     # Yandex / AS13238
+  - "77.88.0.0/18"        # Yandex / AS13238
+  - "84.201.128.0/18"     # Yandex Cloud
+  - "84.252.160.0/19"     # Yandex Cloud
+  - "87.250.224.0/19"     # Yandex / AS13238
+  - "90.156.176.0/22"     # Yandex Cloud
+  - "130.193.32.0/19"     # Yandex Cloud
+  - "213.180.192.0/19"    # Yandex / AS13238
+
+# ── Loop limits ────────────────────────────────────────────────────────────
+# Maximum number of IPs to try before giving up.  Each attempt takes ~3–5 s
+# (allocate + poll operation + release + 1.5 s sleep).
+# 50 attempts ≈ 3–4 minutes wall-clock time.
+max_attempts: 50
+
+# ── Cleanup on failure ─────────────────────────────────────────────────────
+# If the loop is exhausted without a match, the last allocated IP will have
+# already been released inside the loop.  This flag is kept for future use
+# if the loop logic is changed to hold the IP across attempts.
+release_on_exit: true
